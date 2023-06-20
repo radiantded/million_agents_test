@@ -49,16 +49,15 @@ def parse_goods(page: Page) -> dict[str, dict]:
     for item in page.locator('#products-inner > div').all():
         good = {}
         good['id'] = item.get_attribute('data-sku')
-        good['price'] = item.locator(
-            'span.product-price.nowrap.product-card-prices__actual').locator(
-                'span.product-price__sum-rubles').inner_text(
-                    ).replace(u'\xa0', '')
         good['name'] = item.locator(
             'div.product-card__top > a').get_attribute('title')
         good['link'] = SITE + item.locator(
             'div.product-card__top > a').get_attribute('href')
         goods[good['id']] = good
-        
+        good['price'] = item.locator(
+            'span.product-price.nowrap.product-card-prices__actual').locator(
+                'span.product-price__sum-rubles').inner_text(
+                    ).replace(u'\xa0', '')        
         try:
             good['old_price'] = item.locator(
                 'span.product-price.nowrap.product-card-prices__old').locator(
