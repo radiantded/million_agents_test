@@ -53,6 +53,11 @@ def parse_goods(page: Page) -> dict[str, dict]:
             'span.product-price.nowrap.product-card-prices__actual').locator(
                 'span.product-price__sum-rubles').inner_text(
                     ).replace(u'\xa0', '')
+        good['name'] = item.locator(
+            'div.product-card__top > a').get_attribute('title')
+        good['link'] = SITE + item.locator(
+            'div.product-card__top > a').get_attribute('href')
+        goods[good['id']] = good
         
         try:
             good['old_price'] = item.locator(
@@ -60,20 +65,16 @@ def parse_goods(page: Page) -> dict[str, dict]:
                     'span.product-price__sum-rubles').inner_text(
                         timeout=1000).replace(u'\xa0', '')
         except Exception:
-            logger.warning('Нет прежней цены')
+            logger.warning(f"Товар {good['id']}: Нет прежней цены")
             good['old_price'] = None
         
-        good['name'] = item.locator(
-            'div.product-card__top > a').get_attribute('title')
-        good['link'] = SITE + item.locator(
-            'div.product-card__top > a').get_attribute('href')
-        goods[good['id']] = good
+        
     
     return goods
 
 
 def parse_category(page: Page) -> dict[str, dict]:
-    logger.info(f'Парсинг категории {CATEGORY_NAME}')
+    logger.info(f'Парсинг категории "{CATEGORY_NAME}"')
     try:
         page.get_by_role('button').get_by_text('Покупать онлайн').click()
     except Exception as ex:
